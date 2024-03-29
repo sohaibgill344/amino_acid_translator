@@ -1,0 +1,95 @@
+#DNA TO RNA TO PROTEIN ALSO DNA COMPLIMENTARY  SEQUENCE
+codon_table = {
+    "UUU": "F", "UUC": "F", "UUA": "L", "UUG": "L",
+    "CUU": "L", "CUC": "L", "CUA": "L", "CUG": "L",
+    "AUU": "I", "AUC": "I", "AUA": "I", "AUG": "M",
+    "GUU": "V", "GUC": "V", "GUA": "V", "GUG": "V",
+    "UCU": "S", "UCC": "S", "UCA": "S", "UCG": "S",
+    "CCU": "P", "CCC": "P", "CCA": "P", "CCG": "P",
+    "ACU": "T", "ACC": "T", "ACA": "T", "ACG": "T",
+    "GCU": "A", "GCC": "A", "GCA": "A", "GCG": "A",
+    "UAU": "Y", "UAC": "Y", "UAA": "*", "UAG": "*",
+    "CAU": "H", "CAC": "H", "CAA": "Q", "CAG": "Q",
+    "AAU": "N", "AAC": "N", "AAA": "K", "AAG": "K",
+    "GAU": "D", "GAC": "D", "GAA": "E", "GAG": "E",
+    "UGU": "C", "UGC": "C", "UGA": "*", "UGG": "W",
+    "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R",
+    "AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R",
+    "GGU": "G", "GGC": "G", "GGA": "G", "GGG": "G"
+}
+
+def dna_to_rna(dna_sequence):
+    return dna_sequence.replace('T', 'U')
+
+def translate_rna_to_protein(rna_sequence, frame):
+    start_codon_index = frame
+    protein_sequence = ""
+    found_start = False
+    for i in range(start_codon_index, len(rna_sequence), 3):
+        codon = rna_sequence[i:i+3]
+        if codon == "AUG" and not found_start:
+            found_start = True
+        if found_start:
+            if all(base in "AUGC" for base in codon):
+                if codon in codon_table:
+                    amino_acid = codon_table[codon]
+                    if amino_acid == "*":
+                        break
+                    protein_sequence += amino_acid
+                else:
+                    protein_sequence += "-"
+            else:
+                print("Error: Invalid RNA sequence. It contains a letter other than A, U, G, or C.")
+                return ""
+    return protein_sequence
+
+def translate_rna_to_protein_with_frames(rna_sequence):
+    frames = [0, 1, 2]
+    for frame in frames:
+        protein_sequence = translate_rna_to_protein(rna_sequence, frame)
+        print(f"Reading Frame {frame}: {protein_sequence}")
+
+def get_sequence_type():
+    while True:
+        sequence_type = input("Enter 'DNA' or 'RNA' to input the sequence type: ").upper()
+        if sequence_type == 'DNA' or sequence_type == 'RNA':
+            return sequence_type
+        else:
+            print("Invalid input. Please enter 'DNA' or 'RNA'.")
+
+def dna_complement(dna_sequence):
+    complement = []
+    for base in dna_sequence:
+        if base == "A":
+            complement.append("T")
+        elif base == "T":
+            complement.append("A")
+        elif base == "C":
+            complement.append("G")
+        elif base == "G":
+            complement.append("C")
+        else:
+            print("Invalid DNA sequence")
+            return ""
+    return complement
+
+def reverse_complement(sequence):
+    complement = dna_complement(sequence)
+    return ''.join(complement[::-1])
+
+sequence_type = get_sequence_type()
+sequence = input(f"Enter {sequence_type} sequence: ")
+
+if sequence_type == 'DNA':
+    rna_sequence = dna_to_rna(sequence)
+    print("RNA sequence:", rna_sequence)
+else:
+    rna_sequence = sequence
+
+translate_rna_to_protein_with_frames(rna_sequence)
+
+if sequence_type == 'DNA':
+    comp = dna_complement(sequence)
+    rev_comp = reverse_complement(sequence)
+    print(f"DNA complement: {''.join(comp)}")
+    print(f"Reverse complement: {''.join(rev_comp)}")
